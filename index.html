@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Eu Te Amo, Lanna</title>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      background: black;
+      font-family: monospace;
+    }
+
+    canvas {
+      display: block;
+    }
+
+    #mensagem {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 36px;
+      font-weight: bold;
+      color: #00aaff;
+      z-index: 10;
+      animation: piscar 1.5s infinite alternate;
+      text-align: center;
+    }
+
+    @keyframes piscar {
+      0% { opacity: 1; }
+      100% { opacity: 0.6; }
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrixCanvas"></canvas>
+  <div id="mensagem">EU TE AMO LANNA 💙</div>
+
+  <script>
+    const canvas = document.getElementById("matrixCanvas");
+    const ctx = canvas.getContext("2d");
+
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+
+    const fontSize = 22;
+    const columns = Math.floor(canvas.width / fontSize);
+    const rows = Math.floor(canvas.height / fontSize);
+
+    const frases = [
+      "EU TE AMO",
+      "VOCÊ TEM A MINHA ALMA",
+      "VOCÊ QUER NAMORAR COMIGO?",
+      "EU SOU TEU",
+      "EU TE VEJO, KAUANNY"
+    ];
+
+    const drops = [];
+
+    for (let i = 0; i < columns; i++) {
+      const frase = frases[Math.floor(Math.random() * frases.length)];
+      drops[i] = {
+        y: Math.floor(Math.random() * rows), // posição vertical
+        frase: frase,
+        index: 0
+      };
+    }
+
+    function drawMatrix() {
+      ctx.fillStyle = "rgba(0, 0, 0, 0.07)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.font = fontSize + "px monospace";
+
+      for (let i = 0; i < drops.length; i++) {
+        const drop = drops[i];
+        const x = i * fontSize;
+        const y = (drop.y + 1) * fontSize; // inicia um pouco mais embaixo
+
+        const letra = drop.frase[drop.index];
+        if (letra) {
+          ctx.fillStyle = Math.random() > 0.5 ? "#ff69b4" : "#ffffff"; // rosa e branco
+          ctx.fillText(letra, x, y);
+        }
+
+        drop.y += 1;
+
+        if (y > canvas.height || drop.index >= drop.frase.length) {
+          drop.y = 0;
+          drop.index = 0;
+          drop.frase = frases[Math.floor(Math.random() * frases.length)];
+        } else {
+          drop.index++;
+        }
+      }
+    }
+
+    setInterval(drawMatrix, 120); // suavidade
+
+    // Fogos de artifício ao clicar
+    document.addEventListener("click", (e) => {
+      criarFogos(e.clientX, e.clientY);
+    });
+
+    function criarFogos(x, y) {
+      for (let i = 0; i < 50; i++) {
+        const span = document.createElement("span");
+        span.innerText = "💖";
+        span.style.position = "fixed";
+        span.style.left = x + "px";
+        span.style.top = y + "px";
+        span.style.fontSize = "18px";
+        span.style.pointerEvents = "none";
+        span.style.zIndex = 999;
+
+        const angle = Math.random() * 2 * Math.PI;
+        const radius = 100 + Math.random() * 60;
+        const dx = Math.cos(angle) * radius;
+        const dy = Math.sin(angle) * radius;
+
+        document.body.appendChild(span);
+
+        span.animate([
+          { transform: `translate(0, 0) scale(1)`, opacity: 1 },
+          { transform: `translate(${dx}px, ${dy}px) scale(1.6)`, opacity: 0 }
+        ], {
+          duration: 1500,
+          easing: "ease-out",
+          fill: "forwards"
+        });
+
+        setTimeout(() => span.remove(), 1600);
+      }
+    }
+
+    window.addEventListener("resize", () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+    });
+  </script>
+</body>
+</html>
